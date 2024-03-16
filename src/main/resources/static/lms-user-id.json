@@ -1,0 +1,53 @@
+{
+  "ASSET_HOST": null,
+  "active_brand_config_json_url": "/dist/brandable_css/73faf8a438d13226c1147de32239d90d/variables-750d72b9d3e5d522f965bf904110c132.json",
+  "url_to_what_gets_loaded_inside_the_tinymce_editor_css": [
+    "/dist/brandable_css/73faf8a438d13226c1147de32239d90d/variables-750d72b9d3e5d522f965bf904110c132.css",
+    "/dist/brandable_css/new_styles_normal_contrast/bundles/what_gets_loaded_inside_the_tinymce_editor-302920e513.css"
+  ],
+  "url_for_high_contrast_tinymce_editor_css": [
+    "/dist/brandable_css/default/variables-high_contrast-750d72b9d3e5d522f965bf904110c132.css",
+    "/dist/brandable_css/new_styles_high_contrast/bundles/what_gets_loaded_inside_the_tinymce_editor-cc24cb95a6.css"
+  ],
+  "current_user_id": "31848",
+  "current_user_roles": [
+    "user",
+    "student"
+  ],
+  "current_user_disabled_inbox": false,
+  "files_domain": "knulms.kongju.ac.kr",
+  "DOMAIN_ROOT_ACCOUNT_ID": 10000000000001,
+  "k12": false,
+  "use_responsive_layout": false,
+  "help_link_name": "도움",
+  "help_link_icon": "help",
+  "use_high_contrast": false,
+  "LTI_LAUNCH_FRAME_ALLOWANCES": [
+    "geolocation *",
+    "microphone *",
+    "camera *",
+    "midi *",
+    "encrypted-media *"
+  ],
+  "SETTINGS": {
+    "open_registration": false,
+    "eportfolios_enabled": false,
+    "collapse_global_nav": true,
+    "show_feedback_link": false,
+    "enable_profiles": false
+  },
+  "current_user": {
+    "id": "31848",
+    "display_name": "지찬우(2019###89)",
+    "avatar_image_url": "https://knulms.kongju.ac.kr/images/messages/avatar-50.png",
+    "html_url": "https://knulms.kongju.ac.kr/about/31848"
+  },
+  "page_view_update_url": "/page_views/b9e7e9c2-2741-4afe-9c1a-46196a404297?page_view_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpIjoiYjllN2U5YzItMjc0MS00YWZlLTljMWEtNDYxOTZhNDA0Mjk3IiwidSI6MTAwMDAwMDAwMzE4NDgsImMiOiIyMDI0LTAyLTI1VDEzOjM5OjM5LjMxWiJ9.LbLkbRWL9z-fC8z5ZXUCOcIc234LHJstqjvSeQlosC8",
+  "context_asset_string": null,
+  "TIMEZONE": "Asia/Seoul",
+  "LOCALE": "ko",
+  "BIGEASY_LOCALE": "ko_KR",
+  "FULLCALENDAR_LOCALE": "ko",
+  "MOMENT_LOCALE": "ko",
+  "notices": []
+}

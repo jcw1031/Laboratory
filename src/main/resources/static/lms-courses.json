@@ -1,0 +1,202 @@
+[
+  {
+    "id": 22770,
+    "name": "[교수학습혁신센터] 2022학년도 동계방학 학습법 특강 <KNU 모두의 학교>",
+    "account_id": 1,
+    "uuid": "upB2yy9JwPpsq6cpq2Tm8B4RziB8zTerxlV1izeN",
+    "start_at": "2022-12-09T08:04:00Z",
+    "grading_standard_id": null,
+    "is_public": false,
+    "course_code": "[교수학습혁신센터] 2022학년도 동계방학 학습법 특강 <KNU 모두의 학교>",
+    "default_view": "feed",
+    "root_account_id": 1,
+    "enrollment_term_id": 16,
+    "end_at": null,
+    "public_syllabus": false,
+    "public_syllabus_to_auth": false,
+    "storage_quota_mb": 500,
+    "is_public_to_auth_users": false,
+    "apply_assignment_group_weights": false,
+    "calendar": {
+      "ics": "https://knulms.kongju.ac.kr/feeds/calendars/course_upB2yy9JwPpsq6cpq2Tm8B4RziB8zTerxlV1izeN.ics"
+    },
+    "time_zone": "Asia/Seoul",
+    "blueprint": false,
+    "enrollments": [
+      {
+        "type": "student",
+        "role": "StudentEnrollment",
+        "role_id": 3,
+        "user_id": 31848,
+        "enrollment_state": "active"
+      }
+    ],
+    "hide_final_grades": false,
+    "workflow_state": "available",
+    "restrict_enrollments_to_course_dates": false
+  },
+  {
+    "id": 19107,
+    "name": "[교수학습혁신센터] 학습법특강 'KNU 모두의 학교'(LMS)",
+    "account_id": 1,
+    "uuid": "XJ5FiF8svxAm1nLRVOU6hOaAnvHjcJL0m54eDYhN",
+    "start_at": "2022-02-28T15:00:00Z",
+    "grading_standard_id": null,
+    "is_public": false,
+    "course_code": "[교수학습혁신센터] 학습법특강 'KNU 모두의 학교'(LMS)",
+    "default_view": "modules",
+    "root_account_id": 1,
+    "enrollment_term_id": 14,
+    "end_at": null,
+    "public_syllabus": false,
+    "public_syllabus_to_auth": false,
+    "storage_quota_mb": 500,
+    "is_public_to_auth_users": false,
+    "apply_assignment_group_weights": false,
+    "calendar": {
+      "ics": "https://knulms.kongju.ac.kr/feeds/calendars/course_XJ5FiF8svxAm1nLRVOU6hOaAnvHjcJL0m54eDYhN.ics"
+    },
+    "time_zone": "Asia/Seoul",
+    "blueprint": false,
+    "enrollments": [
+      {
+        "type": "student",
+        "role": "StudentEnrollment",
+        "role_id": 3,
+        "user_id": 31848,
+        "enrollment_state": "active"
+      }
+    ],
+    "hide_final_grades": false,
+    "workflow_state": "available",
+    "restrict_enrollments_to_course_dates": false
+  },
+  {
+    "id": 19106,
+    "name": "[교수학습혁신센터] 학습법특강 'KNU 모두의 학교'(ZOOM)",
+    "account_id": 1,
+    "uuid": "7fjtS9QLwf3LIK1V9cM9DkmqXY4Lt50w8tXsdeWg",
+    "start_at": "2022-05-31T07:26:00Z",
+    "grading_standard_id": null,
+    "is_public": false,
+    "course_code": "[교수학습혁신센터] 학습법특강 'KNU 모두의 학교'(ZOOM)",
+    "default_view": "feed",
+    "root_account_id": 1,
+    "enrollment_term_id": 14,
+    "end_at": null,
+    "public_syllabus": false,
+    "public_syllabus_to_auth": false,
+    "storage_quota_mb": 500,
+    "is_public_to_auth_users": false,
+    "apply_assignment_group_weights": false,
+    "calendar": {
+      "ics": "https://knulms.kongju.ac.kr/feeds/calendars/course_7fjtS9QLwf3LIK1V9cM9DkmqXY4Lt50w8tXsdeWg.ics"
+    },
+    "time_zone": "Asia/Seoul",
+    "blueprint": false,
+    "enrollments": [
+      {
+        "type": "student",
+        "role": "StudentEnrollment",
+        "role_id": 3,
+        "user_id": 31848,
+        "enrollment_state": "active"
+      }
+    ],
+    "hide_final_grades": false,
+    "workflow_state": "available",
+    "restrict_enrollments_to_course_dates": false
+  },
+  {
+    "id": 19171,
+    "name": "[산학연구지원실] 창업특강",
+    "account_id": 1,
+    "uuid": "v0Lzin5M6OpUjcAGKYCaXAhcPPZpU2SItAZcXjMQ",
+    "start_at": "2022-07-15T04:32:00Z",
+    "grading_standard_id": null,
+    "is_public": false,
+    "course_code": "[산학연구지원실] 창업특강",
+    "default_view": "feed",
+    "root_account_id": 1,
+    "enrollment_term_id": 16,
+    "end_at": null,
+    "public_syllabus": false,
+    "public_syllabus_to_auth": false,
+    "storage_quota_mb": 500,
+    "is_public_to_auth_users": false,
+    "apply_assignment_group_weights": false,
+    "calendar": {
+      "ics": "https://knulms.kongju.ac.kr/feeds/calendars/course_v0Lzin5M6OpUjcAGKYCaXAhcPPZpU2SItAZcXjMQ.ics"
+    },
+    "time_zone": "Asia/Seoul",
+    "blueprint": false,
+    "enrollments": [
+      {
+        "type": "student",
+        "role": "StudentEnrollment",
+        "role_id": 3,
+        "user_id": 31848,
+        "enrollment_state": "active"
+      }
+    ],
+    "hide_final_grades": false,
+    "workflow_state": "available",
+    "restrict_enrollments_to_course_dates": false
+  },
+  {
+    "id": 26706,
+    "access_restricted_by_date": true
+  },
+  {
+    "id": 22764,
+    "access_restricted_by_date": true
+  },
+  {
+    "id": 30456,
+    "access_restricted_by_date": true
+  },
+  {
+    "id": 19099,
+    "name": "[인권센터_공과대학] 성폭력, 가정폭력",
+    "account_id": 1,
+    "uuid": "egzRsvNpc1ebEwoHI86Bs0kh0vNeBf2cbcjhkkOo",
+    "start_at": "2022-05-26T08:44:00Z",
+    "grading_standard_id": null,
+    "is_public": false,
+    "course_code": "[인권센터_공과대학] 성폭력, 가정폭력",
+    "default_view": "feed",
+    "root_account_id": 1,
+    "enrollment_term_id": 1,
+    "end_at": "2022-08-30T15:00:00Z",
+    "public_syllabus": false,
+    "public_syllabus_to_auth": false,
+    "storage_quota_mb": 500,
+    "is_public_to_auth_users": false,
+    "apply_assignment_group_weights": false,
+    "calendar": {
+      "ics": "https://knulms.kongju.ac.kr/feeds/calendars/course_egzRsvNpc1ebEwoHI86Bs0kh0vNeBf2cbcjhkkOo.ics"
+    },
+    "time_zone": "Asia/Seoul",
+    "blueprint": false,
+    "enrollments": [
+      {
+        "type": "student",
+        "role": "StudentEnrollment",
+        "role_id": 3,
+        "user_id": 31848,
+        "enrollment_state": "active"
+      }
+    ],
+    "hide_final_grades": false,
+    "workflow_state": "available",
+    "restrict_enrollments_to_course_dates": false
+  },
+  {
+    "id": 30126,
+    "access_restricted_by_date": true
+  },
+  {
+    "id": 30119,
+    "access_restricted_by_date": true
+  }
+]
