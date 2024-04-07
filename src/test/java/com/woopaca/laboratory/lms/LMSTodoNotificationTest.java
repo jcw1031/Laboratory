@@ -22,7 +22,6 @@ class LMSTodoNotificationTest {
         List<List<Todo>> todosList = courses.stream()
                 .map(lmsTodoNotification::getTodo)
                 .filter(todos -> !todos.isEmpty())
-                .map(todos -> todos.)
                 .toList();
         log.info("todosList = {}", todosList);
     }
