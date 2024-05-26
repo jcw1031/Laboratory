@@ -24,13 +24,13 @@ public class OptimisticLockRetryAspect {
 
     @Around("retry()")
     public Object retryOptimisticLock(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.info("aop!!");
         Exception exceptionHolder = null;
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             try {
                 return joinPoint.proceed();
             } catch (Exception exception) {
                 exceptionHolder = exception;
+                log.info("aop!!");
                 Thread.sleep(RETRY_DELAY_MS);
             }
         }

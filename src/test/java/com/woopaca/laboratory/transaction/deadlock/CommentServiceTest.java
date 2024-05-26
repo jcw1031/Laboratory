@@ -1,7 +1,9 @@
 package com.woopaca.laboratory.transaction.deadlock;
 
+import com.woopaca.laboratory.transaction.deadlock.entity.NonRelationshipPost;
 import com.woopaca.laboratory.transaction.deadlock.entity.Post;
 import com.woopaca.laboratory.transaction.deadlock.entity.VersionPost;
+import com.woopaca.laboratory.transaction.deadlock.repository.NonRelationshipPostRepository;
 import com.woopaca.laboratory.transaction.deadlock.repository.PostRepository;
 import com.woopaca.laboratory.transaction.deadlock.repository.VersionPostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,8 +35,12 @@ class CommentServiceTest {
 
     Post post;
     VersionPost versionPost;
+    NonRelationshipPost nonRelationshipPost;
+
     ExecutorService executorService;
     CountDownLatch latch;
+    @Autowired
+    private NonRelationshipPostRepository nonRelationshipPostRepository;
 
     @BeforeEach
     void setUp() {
@@ -51,53 +58,60 @@ class CommentServiceTest {
                         .build()
         );
 
+        nonRelationshipPost = nonRelationshipPostRepository.save(
+                NonRelationshipPost.builder()
+                        .title("title")
+                        .content("content")
+                        .build()
+        );
+
         executorService = Executors.newFixedThreadPool(TOTAL_COUNT);
         latch = new CountDownLatch(TOTAL_COUNT);
     }
 
     @Test
     void should_throwException_forTransactionDeadlock() throws InterruptedException {
-        for (int i = 0; i < TOTAL_COUNT; i++) {
-            int commentNumber = i + 1;
-            executorService.submit(() -> {
-                try {
-                    commentService.writeCommentWithTransactionDeadlock(post.getId(), String.format("comment%d", commentNumber));
-                } catch (Exception e) {
-                    log.error("Exception", e);
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentWithTransactionDeadlock(postId, commentContent));
+    }
 
-        latch.await();
+    @Test
+    void increaseCommentCount_before_insertComment() throws InterruptedException {
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentAfterIncreaseCommentCount(postId, commentContent));
+    }
+
+    @Test
+    void nonRelationshipTest() throws InterruptedException {
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentNonRelationship(postId, commentContent));
+    }
+
+    @Test
+    void synchronizedTest() throws InterruptedException {
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentWithSynchronized(postId, commentContent));
     }
 
     @Test
     void optimisticLockTest() throws InterruptedException {
-        for (int i = 0; i < TOTAL_COUNT; i++) {
-            int commentNumber = i + 1;
-            executorService.submit(() -> {
-                try {
-                    commentService.writeCommentWithOptimisticLock(versionPost.getId(), String.format("comment%d", commentNumber));
-                } catch (Exception e) {
-                    log.error("Exception", e);
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentWithOptimisticLock(postId, commentContent));
 
-        latch.await();
     }
 
     @Test
     void pessimisticLockTest() throws InterruptedException {
+        executionParallel((postId, commentContent) ->
+                commentService.writeCommentWithPessimisticLock(postId, commentContent));
+    }
+
+    private void executionParallel(BiConsumer<Long, String> consumer) throws InterruptedException {
         for (int i = 0; i < TOTAL_COUNT; i++) {
             int commentNumber = i + 1;
             executorService.submit(() -> {
                 try {
-                    commentService.writeCommentWithPessimisticLock(post.getId(), String.format("comment%d", commentNumber));
+                    consumer.accept(post.getId(), String.format("comment%d", commentNumber));
                 } catch (Exception e) {
                     log.error("Exception", e);
                 } finally {
