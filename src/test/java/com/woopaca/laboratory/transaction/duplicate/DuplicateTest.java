@@ -1,43 +1,50 @@
 package com.woopaca.laboratory.transaction.duplicate;
 
-import com.woopaca.laboratory.transaction.duplicate.domain.CityBus;
+import com.woopaca.laboratory.concurrent.ParallelTest;
+import com.woopaca.laboratory.transaction.duplicate.entity.CityBus;
 import com.woopaca.laboratory.transaction.duplicate.repository.CityBusRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 @Slf4j
-@Transactional
-@Rollback(value = false)
 @SpringBootTest
-public class DuplicateTest {
+public class DuplicateTest extends ParallelTest {
 
     @Autowired
-    private CityBusRepository cityBusRepository;
+    CityBusRepository cityBusRepository;
+
+    @Autowired
+    CityBusService cityBusService;
+
+    @BeforeEach
+    void setUp() {
+        LocalTime currentTime = LocalTime.of(15, 0, 0);
+        Random random = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            CityBus cityBus = new CityBus(String.valueOf(i));
+
+            Set<LocalTime> arrivalTimes = new HashSet<>();
+            for (int j = 0; j < 5; j++) {
+                int randomNumber = random.nextInt(30);
+                arrivalTimes.add(currentTime.plusMinutes(randomNumber));
+            }
+            cityBus.updateArrivalTimes(arrivalTimes);
+
+            cityBusRepository.save(cityBus);
+        }
+    }
 
     @Test
-    void duplicateEntryTest() {
-        List<CityBus> buses = cityBusRepository.findAll();
-        List<CityBus> result = buses.stream()
-                .peek(cityBus -> {
-                    log.info("cityBus = {}, time = {}", cityBus.getBusNumber(), cityBus.getArrivalTimes());
-                })
-                .toList();
-
-        LocalTime time1 = LocalTime.of(17, 31, 25);
-        LocalTime time2 = LocalTime.of(17, 42, 20);
-        LocalTime time3 = LocalTime.of(17, 52, 20);
-
-        result.stream()
-                .forEach(cityBus -> {
-                    cityBus.updateArrivalTimes(List.of(time1, time2, time3));
-                    cityBusRepository.save(cityBus);
-                });
+    void duplicateEntryTest() throws InterruptedException {
+        executionParallel(integer -> cityBusService.updateCityBusArrivalTimes(), 2);
     }
 }

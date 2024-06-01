@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 class PostServiceTest extends ParallelTest {
 
     public static final int TOTAL_COUNT = 3;
+
     @Autowired
     PostService postService;
 

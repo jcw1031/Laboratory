@@ -14,8 +14,8 @@ public class SessionInterceptor implements HandlerInterceptor {
             throws Exception {
         HttpSession httpSession = request.getSession();
         String sessionId = httpSession.getId();
-        log.info("sessionId = {}", sessionId);
-        log.info("httpSession = {}", httpSession);
+//        log.info("sessionId = {}", sessionId);
+//        log.info("httpSession = {}", httpSession);
         return true;
     }
 }
