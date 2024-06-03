@@ -1,4 +1,4 @@
-package com.woopaca.laboratory.socket.chat;
+package com.woopaca.laboratory.stomp.chat;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
 
-    private final SimpMessageSendingOperations messageTemplate;
+    private final SimpMessageSendingOperations messagingTemplate;
 
-    public ChatController(SimpMessageSendingOperations messageTemplate) {
-        this.messageTemplate = messageTemplate;
+    public ChatController(SimpMessageSendingOperations messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/chat.sendMessage")
+    @MessageMapping("/chat/send-message")
     public void sendMessage(@Payload ChatMessage chatMessage) {
         log.info("chatMessage = {}", chatMessage);
         String fullContent = chatMessage.content();
@@ -28,14 +28,14 @@ public class ChatController {
             log.info("mention = {}", mention);
             String content = fullContent.substring(firstWhitespace + 1);
             chatMessage = new ChatMessage(content, chatMessage.sender(), MessageType.CHAT);
-            messageTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
-            messageTemplate.convertAndSend(String.format("/queue/%s", chatMessage.sender()), chatMessage);
+            messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
+            messagingTemplate.convertAndSend(String.format("/queue/%s", chatMessage.sender()), chatMessage);
             return;
         }
-        messageTemplate.convertAndSend("/topic/public", chatMessage);
+        messagingTemplate.convertAndSend("/topic/public", chatMessage);
     }
 
-    @MessageMapping("/chat.addUser")
+    @MessageMapping("/chat/add-user")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         // Add username in websocket session

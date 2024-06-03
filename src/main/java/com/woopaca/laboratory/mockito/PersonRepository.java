@@ -1,6 +1,5 @@
 package com.woopaca.laboratory.mockito;
 
-import com.woopaca.laboratory.batchprocessing.Person;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -33,11 +33,11 @@ function connect(event) {
 
 function onConnected() {
   // Subscribe to the Public Topic
-  stompClient.subscribe('/topic/public', onMessageReceived);
-  stompClient.subscribe(`/queue/${username}`, onMessageReceived);
+  stompClient.subscribe(`/topic/${username}`, onMessageReceived);
+  // stompClient.subscribe(`/queue/${username}`, onMessageReceived);
 
   // Tell your username to the server
-  stompClient.send('/app/chat.addUser',
+  stompClient.send('/app/chat/add-user',
     {},
     JSON.stringify({ sender: username, type: 'JOIN' })
   )
@@ -58,7 +58,7 @@ function sendMessage(event) {
       content: messageInput.value,
       type: 'CHAT'
     };
-    stompClient.send('/app/chat.sendMessage', {}, JSON.stringify(chatMessage));
+    stompClient.send('/app/chat/send-message', {}, JSON.stringify(chatMessage));
     messageInput.value = '';
   }
   event.preventDefault();

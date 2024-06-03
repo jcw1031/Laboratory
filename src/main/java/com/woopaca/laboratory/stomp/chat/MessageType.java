@@ -1,4 +1,4 @@
-package com.woopaca.laboratory.socket.chat;
+package com.woopaca.laboratory.stomp.chat;
 
 public enum MessageType {
 

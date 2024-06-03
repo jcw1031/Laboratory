@@ -1,4 +1,4 @@
-package com.woopaca.laboratory.socket.chat;
+package com.woopaca.laboratory.stomp.chat;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
