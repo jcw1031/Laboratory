@@ -32,7 +32,7 @@ public class ChatController {
             messagingTemplate.convertAndSend(String.format("/queue/%s", chatMessage.sender()), chatMessage);
             return;
         }
-        messagingTemplate.convertAndSend("/topic/public", chatMessage);
+        messagingTemplate.convertAndSend("/topic/sdfs", chatMessage);
     }
 
     @MessageMapping("/chat/add-user")

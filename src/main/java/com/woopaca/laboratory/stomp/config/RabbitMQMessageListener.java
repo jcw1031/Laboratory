@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woopaca.laboratory.stomp.chat.ChatMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@Profile("!test")
 @Component
 public class RabbitMQMessageListener {
 
