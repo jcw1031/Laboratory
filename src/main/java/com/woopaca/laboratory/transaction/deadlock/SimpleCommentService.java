@@ -1,5 +1,6 @@
 package com.woopaca.laboratory.transaction.deadlock;
 
+import com.woopaca.laboratory.transaction.deadlock.aop.Retry;
 import com.woopaca.laboratory.transaction.deadlock.entity.Comment;
 import com.woopaca.laboratory.transaction.deadlock.entity.NonRelationshipComment;
 import com.woopaca.laboratory.transaction.deadlock.entity.NonRelationshipPost;
@@ -14,14 +15,12 @@ import com.woopaca.laboratory.transaction.deadlock.repository.VersionCommentRepo
 import com.woopaca.laboratory.transaction.deadlock.repository.VersionPostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
 @Service
-public class CommentService {
+public class SimpleCommentService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -30,7 +29,7 @@ public class CommentService {
     private final NonRelationshipPostRepository nonRelationshipPostRepository;
     private final NonRelationshipCommentRepository nonRelationshipCommentRepository;
 
-    public CommentService(PostRepository postRepository, CommentRepository commentRepository, VersionPostRepository versionPostRepository, VersionCommentRepository versionCommentRepository, NonRelationshipPostRepository nonRelationshipPostRepository, NonRelationshipCommentRepository nonRelationshipCommentRepository) {
+    public SimpleCommentService(PostRepository postRepository, CommentRepository commentRepository, VersionPostRepository versionPostRepository, VersionCommentRepository versionCommentRepository, NonRelationshipPostRepository nonRelationshipPostRepository, NonRelationshipCommentRepository nonRelationshipCommentRepository) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.versionPostRepository = versionPostRepository;
@@ -39,7 +38,7 @@ public class CommentService {
         this.nonRelationshipCommentRepository = nonRelationshipCommentRepository;
     }
 
-    public void writeCommentWithTransactionDeadlock(Long postId, String commentContent) {
+    public synchronized void writeComment(Long postId, String commentContent) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
         Comment comment = new Comment(commentContent, post);
@@ -72,7 +71,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-//    @Retry
+    @Retry
     public void writeCommentWithOptimisticLock(Long postId, String commentContent) {
         VersionPost post = versionPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
@@ -86,25 +85,6 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
         Comment comment = new Comment(commentContent, post);
         post.writeComment(comment);
-        commentRepository.save(comment);
-    }
-
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void writeCommentWithoutTransaction(Long postId, String commentContent) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
-        Comment comment = new Comment(commentContent, post);
-        post.increaseCommentsCount();
-        commentRepository.save(comment);
-        postRepository.save(post);
-    }
-
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void writeCommentWithIsolationSerializable(Long postId, String commentContent) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
-        Comment comment = new Comment(commentContent, post);
-        post.increaseCommentsCount();
         commentRepository.save(comment);
     }
 }

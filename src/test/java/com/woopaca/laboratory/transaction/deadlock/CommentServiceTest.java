@@ -12,8 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @Slf4j
 @ActiveProfiles("test")
@@ -30,7 +31,7 @@ class CommentServiceTest extends ParallelTest {
     VersionPostRepository versionPostRepository;
 
     @Autowired
-    private NonRelationshipPostRepository nonRelationshipPostRepository;
+    NonRelationshipPostRepository nonRelationshipPostRepository;
 
     static final int TOTAL_COUNT = 3;
 
@@ -98,7 +99,7 @@ class CommentServiceTest extends ParallelTest {
     void optimisticLockTest() throws InterruptedException {
         executionParallel(index -> {
             String commentContent = String.format("comment%d", index);
-            commentService.writeCommentWithOptimisticLock(post.getId(), commentContent);
+            commentService.writeCommentWithOptimisticLock(versionPost.getId(), commentContent);
         }, TOTAL_COUNT);
     }
 
@@ -107,6 +108,22 @@ class CommentServiceTest extends ParallelTest {
         executionParallel(index -> {
             String commentContent = String.format("comment%d", index);
             commentService.writeCommentWithPessimisticLock(post.getId(), commentContent);
+        }, TOTAL_COUNT);
+    }
+
+    @Test
+    void withoutTransactionTest() throws InterruptedException {
+        executionParallel(index -> {
+            String commentContent = String.format("comment%d", index);
+            commentService.writeCommentWithoutTransaction(post.getId(), commentContent);
+        }, TOTAL_COUNT);
+    }
+
+    @Test
+    void withIsolationSerializable() throws InterruptedException {
+        executionParallel(index -> {
+            String commentContent = String.format("comment%d", index);
+            commentService.writeCommentWithIsolationSerializable(post.getId(), commentContent);
         }, TOTAL_COUNT);
     }
 

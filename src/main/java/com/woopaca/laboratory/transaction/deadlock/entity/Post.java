@@ -51,7 +51,7 @@ public class Post {
         commentsCount++;
     }
 
-    public void increaseCommentCount() {
+    public void increaseCommentsCount() {
         commentsCount++;
     }
 }

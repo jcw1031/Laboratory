@@ -1,12 +1,9 @@
 package com.woopaca.laboratory.transaction.deadlock.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,17 +21,15 @@ public class VersionComment {
 
     private LocalDateTime writtenAt;
 
-    @JoinColumn(name = "post")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private VersionPost post;
+    private Long postId;
 
     public VersionComment() {
     }
 
     @Builder
-    public VersionComment(String content, VersionPost post) {
+    public VersionComment(String content, Long postId) {
         this.content = content;
         this.writtenAt = LocalDateTime.now();
-        this.post = post;
+        this.postId = postId;
     }
 }

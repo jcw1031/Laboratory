@@ -34,7 +34,8 @@ public class LMSAuthenticationManager {
     private final WebDriver driver;
 
     public LMSAuthenticationManager() {
-        WebDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver()
+                .setup();
 
         ChromeOptions options = createChromeOptions();
         driver = new ChromeDriver(options);
@@ -42,7 +43,7 @@ public class LMSAuthenticationManager {
 
     @PreDestroy
     void tearDown() {
-        driver.close();
+        driver.quit();
     }
 
     public String seleniumLogin(String id, String password) {

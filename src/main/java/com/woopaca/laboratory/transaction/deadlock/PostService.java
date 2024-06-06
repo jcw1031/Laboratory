@@ -20,6 +20,6 @@ public class PostService {
     public void updatePostCommentsCount(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
-        post.increaseCommentCount();
+        post.increaseCommentsCount();
     }
 }
