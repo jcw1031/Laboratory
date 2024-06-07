@@ -1,3 +1,0 @@
-[submodule "transaction/src/main/resources/secret"]
-	path = transaction/src/main/resources/secret
-	url = https://github.com/jcw1031/laboratory-secret.git

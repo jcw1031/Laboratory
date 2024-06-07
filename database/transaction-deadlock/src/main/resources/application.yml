@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:transaction_deadlock;MODE=MySQL;
+    username: sa
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+    hibernate.ddl-auto: validate
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.orm.jdbc.bind: trace
+  org.springframework.transaction.interceptor: trace
+  org.springframework.transaction: debug
+  org.springframework.orm.jpa: debug

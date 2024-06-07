@@ -2,8 +2,9 @@ rootProject.name = 'laboratory'
 
 include 'stomp'
 include 'session'
-include 'transaction'
 include 'lms'
 include 'mockito'
-include 'lms'
 include 'logging'
+
+include 'database:transaction-deadlock'
+include 'database:duplicate-key'
