@@ -1,0 +1,4 @@
+rabbitmq:
+  database-queue-name: databaseQueue
+  topic-exchange-name: amq.topic
+  routing-key: '#'
