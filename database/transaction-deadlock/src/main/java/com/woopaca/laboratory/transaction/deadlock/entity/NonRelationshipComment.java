@@ -21,12 +21,15 @@ public class NonRelationshipComment {
 
     private LocalDateTime writtenAt;
 
+    private Long postId;
+
     public NonRelationshipComment() {
     }
 
     @Builder
-    public NonRelationshipComment(String content) {
+    public NonRelationshipComment(String content, Long postId) {
         this.content = content;
         this.writtenAt = LocalDateTime.now();
+        this.postId = postId;
     }
 }

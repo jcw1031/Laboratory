@@ -15,7 +15,6 @@ import com.woopaca.laboratory.transaction.deadlock.repository.VersionCommentRepo
 import com.woopaca.laboratory.transaction.deadlock.repository.VersionPostRepository;
 import com.woopaca.laboratory.transaction.deadlock.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,12 +80,6 @@ class CommentServiceTest extends ParallelTest {
         );
     }
 
-    @AfterEach
-    void tearDown() {
-        postRepository.deleteAll();
-        commentRepository.deleteAll();
-    }
-
     @DisplayName("교착 상태 발생 테스트")
     @Test
     void should_throwException_forTransactionDeadlock() throws InterruptedException {
@@ -95,7 +88,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentWithTransactionDeadlock(this.post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<Comment> allComments = commentRepository.findAll();
+        List<Comment> allComments = commentRepository.findByPost(this.post);
         Post post = postRepository.findById(this.post.getId())
                 .orElseThrow();
 
@@ -111,7 +104,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentAfterIncreaseCommentCount(post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<Comment> allComments = commentRepository.findAll();
+        List<Comment> allComments = commentRepository.findByPost(this.post);
         Post post = postRepository.findById(this.post.getId())
                 .orElseThrow();
 
@@ -127,7 +120,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentNonRelationship(post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<NonRelationshipComment> allComments = nonRelationshipCommentRepository.findAll();
+        List<NonRelationshipComment> allComments = nonRelationshipCommentRepository.findByPostId(this.nonRelationshipPost.getId());
         NonRelationshipPost nonRelationshipPost = nonRelationshipPostRepository.findById(this.nonRelationshipPost.getId())
                 .orElseThrow();
 
@@ -143,7 +136,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentWithSynchronized(post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<Comment> allComments = commentRepository.findAll();
+        List<Comment> allComments = commentRepository.findByPost(this.post);
         Post post = postRepository.findById(this.post.getId())
                 .orElseThrow();
 
@@ -156,10 +149,10 @@ class CommentServiceTest extends ParallelTest {
     void optimisticLockTest() throws InterruptedException {
         executionParallel(index -> {
             String commentContent = String.format("comment%d", index);
-            commentService.writeCommentWithOptimisticLock(versionPost.getId(), commentContent);
+            commentService.writeCommentWithOptimisticLock(this.versionPost.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<VersionComment> allComments = versionCommentRepository.findAll();
+        List<VersionComment> allComments = versionCommentRepository.findByPostId(this.versionPost.getId());
         VersionPost versionPost = versionPostRepository.findById(this.versionPost.getId())
                 .orElseThrow();
 
@@ -175,7 +168,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentWithPessimisticLock(post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<Comment> allComments = commentRepository.findAll();
+        List<Comment> allComments = commentRepository.findByPost(this.post);
         Post post = postRepository.findById(this.post.getId())
                 .orElseThrow();
 
@@ -191,7 +184,7 @@ class CommentServiceTest extends ParallelTest {
             commentService.writeCommentWithoutTransaction(post.getId(), commentContent);
         }, TOTAL_COUNT);
 
-        List<Comment> allComments = commentRepository.findAll();
+        List<Comment> allComments = commentRepository.findByPost(this.post);
         Post post = postRepository.findById(this.post.getId())
                 .orElseThrow();
 

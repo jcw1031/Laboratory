@@ -16,7 +16,6 @@ import com.woopaca.laboratory.transaction.deadlock.repository.VersionPostReposit
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +54,6 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
         post.increaseCommentsCount();
-        postRepository.save(post);
         entityManager.flush();
 
         Comment comment = new Comment(commentContent, post);
@@ -65,7 +63,7 @@ public class CommentService {
     public void writeCommentNonRelationship(Long postId, String commentContent) {
         NonRelationshipPost post = nonRelationshipPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
-        NonRelationshipComment comment = new NonRelationshipComment(commentContent);
+        NonRelationshipComment comment = new NonRelationshipComment(commentContent, postId);
         post.increaseCommentCount();
         nonRelationshipCommentRepository.save(comment);
     }
@@ -105,12 +103,4 @@ public class CommentService {
         postRepository.save(post);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void writeCommentWithIsolationSerializable(Long postId, String commentContent) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
-        Comment comment = new Comment(commentContent, post);
-        post.increaseCommentsCount();
-        commentRepository.save(comment);
-    }
 }
