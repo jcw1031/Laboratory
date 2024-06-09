@@ -1,13 +1,13 @@
-package com.woopaca.laboratory.transaction.deadlock;
+package com.woopaca.laboratory.security;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TransactionDeadlockApplication {
+public class SecurityApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TransactionDeadlockApplication.class, args);
+        SpringApplication.run(SecurityApplication.class, args);
     }
 
 }

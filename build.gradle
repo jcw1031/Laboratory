@@ -15,7 +15,7 @@ configurations {
 }
 
 allprojects {
-    group = 'com.woopaca'
+    group = 'com.woopaca.laboratory'
     version = '0.0.1-SNAPSHOT'
 
     repositories {
@@ -40,7 +40,8 @@ subprojects {
         testAnnotationProcessor 'org.projectlombok:lombok'
     }
 
-    tasks.named('test') {
-        useJUnitPlatform()
-    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }

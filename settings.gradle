@@ -5,6 +5,7 @@ include 'session'
 include 'lms'
 include 'mockito'
 include 'logging'
-
+include 'playground'
+include 'security'
 include 'database:transaction-deadlock'
 include 'database:duplicate-key'
