@@ -27,6 +27,7 @@ public class OptimisticLockRetryAspect {
 
     @Around("retry()")
     public Object retryOptimisticLock(ProceedingJoinPoint joinPoint) throws Throwable {
+        int retryCount = 0;
         Exception exceptionHolder = null;
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             try {
