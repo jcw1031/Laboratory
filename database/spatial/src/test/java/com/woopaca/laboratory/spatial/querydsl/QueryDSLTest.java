@@ -1,5 +1,6 @@
 package com.woopaca.laboratory.spatial.querydsl;
 
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.woopaca.laboratory.spatial.entity.Place;
 import com.woopaca.laboratory.spatial.repository.PlaceRepository;
@@ -16,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import java.util.List;
 
-import static com.querydsl.core.types.dsl.Expressions.booleanTemplate;
+import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 import static com.woopaca.laboratory.spatial.entity.QPlace.place;
 
 @Slf4j
@@ -45,15 +46,15 @@ public class QueryDSLTest {
     void fetchTest() {
         Point point = geometryFactory.createPoint(new Coordinate(127.3659, 37.5836));
 
+        NumberTemplate<Double> distanceSphere = numberTemplate(Double.class,
+                "ST_Distance_Sphere({0}, {1})", place.coordinates, point);
+
         List<Place> places = queryFactory.selectFrom(place)
-                .where(booleanTemplate(
-                        "ST_Distance_Sphere({0}, {1}) <= {2}",
-                        place.coordinates,
-                        point,
-                        2270))
+                .where(distanceSphere.loe(2300))
+                .orderBy(distanceSphere.asc())
                 .fetch();
         log.info("places.size() = {}", places.size());
-
         places.forEach(place -> log.info("place.getName() = {}", place.getName()));
     }
+
 }
