@@ -1,8 +1,8 @@
 package com.woopaca.laboratory.spatial.querydsl;
 
-import com.querydsl.core.types.dsl.BooleanTemplate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.woopaca.laboratory.spatial.entity.Place;
 import com.woopaca.laboratory.spatial.repository.PlaceRepository;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -27,6 +28,7 @@ import static com.woopaca.laboratory.spatial.entity.QPlace.place;
 public class QueryDSLTest {
 
     final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    final CoordinateSequenceFactory coordinateSequenceFactory = geometryFactory.getCoordinateSequenceFactory();
 
     @Autowired
     PlaceRepository placeRepository;
@@ -48,8 +50,9 @@ public class QueryDSLTest {
     void distanceSearchTest() {
         Point point = geometryFactory.createPoint(new Coordinate(127.3659, 37.5836));
 
-        NumberTemplate<Double> distanceSphere = Expressions.numberTemplate(Double.class,
-                "ST_Distance_Sphere({0}, {1})", place.coordinates, point);
+        NumberExpression<Double> distanceSphere = Expressions.numberTemplate(
+                Double.class, "ST_Distance_Sphere({0}, {1})", place.coordinates, point
+        );
 
         List<Place> places = queryFactory.selectFrom(place)
                 .where(distanceSphere.loe(2300))
@@ -69,7 +72,9 @@ public class QueryDSLTest {
                 new Coordinate(127.11111, 37.99999),
                 new Coordinate(127.11111, 37.11111)
         });
-        BooleanTemplate contains = Expressions.booleanTemplate("ST_Contains({0}, {1})", polygon, place.coordinates);
+        BooleanExpression contains = Expressions.booleanTemplate(
+                "ST_Contains({0}, {1})", polygon, place.coordinates
+        );
 
         List<Place> places = queryFactory.selectFrom(place)
                 .where(contains)
