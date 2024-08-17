@@ -19,17 +19,19 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/send-message")
-    public void sendMessage(@Payload ChatMessage chatMessage) {
+    public void sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         log.info("chatMessage = {}", chatMessage);
+        String username = (String) headerAccessor.getSessionAttributes()
+                .get("username");
         String fullContent = chatMessage.content();
         if (fullContent.startsWith("@")) {
             int firstWhitespace = fullContent.indexOf(' ');
             String mention = fullContent.substring(1, firstWhitespace);
             log.info("mention = {}", mention);
             String content = fullContent.substring(firstWhitespace + 1);
-            chatMessage = new ChatMessage(content, chatMessage.sender(), MessageType.CHAT);
+            chatMessage = new ChatMessage(content, username, MessageType.CHAT);
             messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
-            messagingTemplate.convertAndSend(String.format("/queue/%s", chatMessage.sender()), chatMessage);
+            messagingTemplate.convertAndSend(String.format("/queue/%s", username), chatMessage);
             return;
         }
         messagingTemplate.convertAndSend("/topic/public", chatMessage);

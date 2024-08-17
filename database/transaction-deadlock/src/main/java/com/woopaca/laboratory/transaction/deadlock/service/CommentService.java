@@ -14,6 +14,7 @@ import com.woopaca.laboratory.transaction.deadlock.repository.PostRepository;
 import com.woopaca.laboratory.transaction.deadlock.repository.VersionCommentRepository;
 import com.woopaca.laboratory.transaction.deadlock.repository.VersionPostRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -54,7 +55,6 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
         post.increaseCommentsCount();
-        entityManager.flush();
 
         Comment comment = new Comment(commentContent, post);
         commentRepository.save(comment);
@@ -101,6 +101,10 @@ public class CommentService {
         post.increaseCommentsCount();
         commentRepository.save(comment);
         postRepository.save(post);
+    }
+
+    public void writeCommentWithEntityManager() {
+        Post post = entityManager.find(Post.class, 1, LockModeType.PESSIMISTIC_WRITE);
     }
 
 }

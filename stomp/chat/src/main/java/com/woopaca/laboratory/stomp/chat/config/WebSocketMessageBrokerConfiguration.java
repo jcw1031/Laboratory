@@ -1,4 +1,4 @@
-package com.woopaca.laboratory.stomp.config;
+package com.woopaca.laboratory.stomp.chat.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -19,13 +19,6 @@ public class WebSocketMessageBrokerConfiguration implements WebSocketMessageBrok
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-//        registry.enableSimpleBroker("/topic", "/queue");
-        registry.enableStompBrokerRelay("/topic", "/queue")
-                .setRelayHost("localhost")
-                .setRelayPort(61613)
-                .setClientLogin("chat")
-                .setClientPasscode("chat")
-                .setSystemLogin("chat")
-                .setSystemPasscode("chat");
+        registry.enableSimpleBroker("/topic", "/queue");
     }
 }

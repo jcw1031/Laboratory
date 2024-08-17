@@ -1,0 +1,9 @@
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    build:
+      dockerfile: Dockerfile-RabbitMQ
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"

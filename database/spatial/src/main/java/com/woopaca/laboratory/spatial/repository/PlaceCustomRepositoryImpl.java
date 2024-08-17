@@ -24,4 +24,7 @@ public class PlaceCustomRepositoryImpl implements PlaceCustomRepository {
                 .fetch();
     }
 
+    public void test() {
+    }
+
 }
