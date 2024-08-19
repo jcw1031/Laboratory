@@ -4,9 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -30,8 +34,9 @@ public class ChatController {
             log.info("mention = {}", mention);
             String content = fullContent.substring(firstWhitespace + 1);
             chatMessage = new ChatMessage(content, username, MessageType.CHAT);
-            messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
-            messagingTemplate.convertAndSend(String.format("/queue/%s", username), chatMessage);
+//            messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
+            messagingTemplate.convertAndSendToUser(mention, "/queue/message", chatMessage);
+//            messagingTemplate.convertAndSend(String.format("/queue/%s", username), chatMessage);
             return;
         }
         messagingTemplate.convertAndSend("/topic/public", chatMessage);
@@ -39,11 +44,19 @@ public class ChatController {
 
     @MessageMapping("/chat/add-user")
     @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public ChatMessage addUser(@Payload ChatMessage chatMessage, StompHeaderAccessor headerAccessor, Principal principal) {
+        log.info("principal: {}", principal);
         // Add username in websocket session
         log.info("chatMessage = {}", chatMessage);
         headerAccessor.getSessionAttributes()
                 .put("username", chatMessage.sender());
+
+        String sessionId = SimpAttributesContextHolder.getAttributes()
+                .getSessionId();
+        log.info("sessionId = {}", sessionId);
+        String username = (String) SimpAttributesContextHolder.getAttributes()
+                .getAttribute("username");
+        log.info("username: {}", username);
         return chatMessage;
     }
 }
