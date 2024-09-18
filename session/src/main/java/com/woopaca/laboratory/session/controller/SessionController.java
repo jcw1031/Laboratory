@@ -3,6 +3,7 @@ package com.woopaca.laboratory.session.controller;
 import com.woopaca.laboratory.session.dto.SessionRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public class SessionController {
     }
 
     @GetMapping
-    public String getSessionId(HttpSession httpSession) {
+    public String getSessionId(HttpSession httpSession, @CookieValue("test") String test) {
         SessionRequest attribute = Optional.ofNullable((SessionRequest) httpSession.getAttribute(SESSION_KEY))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Session ID"));
         log.info("attribute = {}", attribute);

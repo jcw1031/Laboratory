@@ -25,17 +25,18 @@ public class ChatController {
     @MessageMapping("/chat/send-message")
     public void sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         log.info("chatMessage = {}", chatMessage);
-        String username = (String) headerAccessor.getSessionAttributes()
-                .get("username");
         String fullContent = chatMessage.content();
         if (fullContent.startsWith("@")) {
             int firstWhitespace = fullContent.indexOf(' ');
             String mention = fullContent.substring(1, firstWhitespace);
             log.info("mention = {}", mention);
             String content = fullContent.substring(firstWhitespace + 1);
+            String username = (String) headerAccessor.getSessionAttributes()
+                    .get("username");
+            log.info("username: {}", username);
             chatMessage = new ChatMessage(content, username, MessageType.CHAT);
 //            messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
-            messagingTemplate.convertAndSendToUser(mention, "/queue/message", chatMessage);
+            messagingTemplate.convertAndSendToUser(username, "/queue/messages", chatMessage);
 //            messagingTemplate.convertAndSend(String.format("/queue/%s", username), chatMessage);
             return;
         }
@@ -48,9 +49,6 @@ public class ChatController {
         log.info("principal: {}", principal);
         // Add username in websocket session
         log.info("chatMessage = {}", chatMessage);
-        headerAccessor.getSessionAttributes()
-                .put("username", chatMessage.sender());
-
         String sessionId = SimpAttributesContextHolder.getAttributes()
                 .getSessionId();
         log.info("sessionId = {}", sessionId);
