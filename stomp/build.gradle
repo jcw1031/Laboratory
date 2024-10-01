@@ -1,7 +1,9 @@
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'io.projectreactor.netty:reactor-netty'
-    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.110.Final:osx-aarch_64'
-    testImplementation 'org.springframework.amqp:spring-rabbit-test'
+allprojects {
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-websocket'
+        implementation 'org.springframework.boot:spring-boot-starter-amqp'
+        implementation 'io.projectreactor.netty:reactor-netty'
+        runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.110.Final:osx-aarch_64'
+        testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    }
 }

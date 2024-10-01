@@ -24,16 +24,15 @@ public class ChatController {
 
     @MessageMapping("/chat/send-message")
     public void sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("chatMessage = {}", chatMessage);
+        String destination = headerAccessor.getDestination();
+        log.info("destination: {}", destination);
         String fullContent = chatMessage.content();
         if (fullContent.startsWith("@")) {
             int firstWhitespace = fullContent.indexOf(' ');
             String mention = fullContent.substring(1, firstWhitespace);
-            log.info("mention = {}", mention);
             String content = fullContent.substring(firstWhitespace + 1);
             String username = (String) headerAccessor.getSessionAttributes()
                     .get("username");
-            log.info("username: {}", username);
             chatMessage = new ChatMessage(content, username, MessageType.CHAT);
 //            messagingTemplate.convertAndSend(String.format("/queue/%s", mention), chatMessage);
             messagingTemplate.convertAndSendToUser(username, "/queue/messages", chatMessage);

@@ -8,6 +8,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -15,10 +18,18 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("preSend() 테스트!");
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        StompCommand command = accessor.getCommand();
-        log.info("command: {}", command);
+        if (accessor == null) {
+            return message;
+        }
+
+        if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            String authorization = accessor.getFirstNativeHeader("Authorization");
+            if (StringUtils.hasText(authorization)) {
+                Objects.requireNonNull(accessor.getSessionAttributes())
+                        .put("subject", authorization);
+            }
+        }
         return message;
     }
 }
