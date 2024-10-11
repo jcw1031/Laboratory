@@ -2,13 +2,17 @@ package com.woopaca.laboratory.thread.split;
 
 import com.woopaca.laboratory.thread.split.websocket.StockWebSocketHandler;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 
+import java.io.IOException;
 import java.net.URI;
 
+@Slf4j
 @Component
 public class StockReader {
 
@@ -21,32 +25,93 @@ public class StockReader {
     }
 
     @PostConstruct
-    private void init() {
-        URI uri = URI.create("ws://ops.koreainvestment.com:31000/tryitout/H0STCNT0");
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        webSocketClient.execute(stockWebSocketHandler, headers, uri)
-                .thenAccept(session -> {
-                    try {
-                        String payload = """
-                                {
-                                    "header": {
-                                        "approval_key": "b7582ac5-4f1b-4545-adb9-396d5cc0d2e0",
-                                        "custtype": "P",
-                                        "tr_type": "1",
-                                        "content-type": "utf-8"
-                                    },
-                                    "body": {
-                                        "input": {
-                                            "tr_id": "H0STCNT0",
-                                            "tr_key": "000660"
-                                        }
-                                    }
-                                }
-                                """;
-                        session.sendMessage(new TextMessage(payload));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+    private void init() throws IOException {
+        WebSocketSession session = webSocketClient.execute(stockWebSocketHandler, "ws://ops.koreainvestment.com:21000/tryitout/HDFSCNT0")
+                .join();
+        String payload = """
+                {
+                    "header": {
+                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "custtype": "P",
+                        "tr_type": "1",
+                        "content-type": "utf-8"
+                    },
+                    "body": {
+                        "input": {
+                            "tr_id": "HDFSCNT0",
+                            "tr_key": "DNASAAPL"
+                        }
                     }
-                });
+                }
+                """;
+        session.sendMessage(new TextMessage(payload));
+        payload = """
+                {
+                    "header": {
+                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "custtype": "P",
+                        "tr_type": "1",
+                        "content-type": "utf-8"
+                    },
+                    "body": {
+                        "input": {
+                            "tr_id": "HDFSCNT0",
+                            "tr_key": "DNASTSLA"
+                        }
+                    }
+                }
+                """;
+        session.sendMessage(new TextMessage(payload));
+        payload = """
+                {
+                    "header": {
+                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "custtype": "P",
+                        "tr_type": "1",
+                        "content-type": "utf-8"
+                    },
+                    "body": {
+                        "input": {
+                            "tr_id": "HDFSCNT0",
+                            "tr_key": "DNASNVDA"
+                        }
+                    }
+                }
+                """;
+        session.sendMessage(new TextMessage(payload));
+        payload = """
+                {
+                    "header": {
+                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "custtype": "P",
+                        "tr_type": "1",
+                        "content-type": "utf-8"
+                    },
+                    "body": {
+                        "input": {
+                            "tr_id": "HDFSCNT0",
+                            "tr_key": "DNASAMD"
+                        }
+                    }
+                }
+                """;
+        session.sendMessage(new TextMessage(payload));
+        payload = """
+                {
+                    "header": {
+                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "custtype": "P",
+                        "tr_type": "1",
+                        "content-type": "utf-8"
+                    },
+                    "body": {
+                        "input": {
+                            "tr_id": "HDFSCNT0",
+                            "tr_key": "DNASMSFT"
+                        }
+                    }
+                }
+                """;
+        session.sendMessage(new TextMessage(payload));
     }
 }
