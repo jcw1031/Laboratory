@@ -14,10 +14,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        Mono<WebSocketMessage> mono = Mono.just(session.textMessage("""
+        Mono<WebSocketMessage> initialMessage = Mono.just(session.textMessage("""
                 {
                     "header": {
-                        "approval_key": "",
+                        "approval_key": "4d352c98-9c24-4b64-a79a-df54e223fb3d",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
@@ -25,20 +25,26 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                     "body": {
                         "input": {
                             "tr_id": "H0STCNT0",
-                            "tr_key": "000660"
+                            "tr_key": "DNASAAPL"
                         }
                     }
                 }
                 """));
-        Mono<Void> sendMessage = session.send(mono);
-        Flux<Void> receiveMessages = session.receive()
-                .doOnNext(message -> {
 
-                    log.info("message: {}", message.getPayloadAsText());
-                })
-                .thenMany(Flux.never());
+        Mono<Void> sendInitialMessage = session.send(initialMessage);
 
-        return sendMessage.thenMany(receiveMessages)
+        Flux<Void> handleMessages = session.receive()
+                .flatMap(message -> {
+                    String payload = message.getPayloadAsText();
+                    log.info("Received message: {}", payload);
+                    if (payload.contains("PINGPONG")) {
+                        log.info("Sending PINGPONG response");
+                        return session.send(Mono.just(session.textMessage(payload)));
+                    }
+                    return Mono.empty();
+                });
+
+        return sendInitialMessage.thenMany(handleMessages)
                 .then();
     }
 }

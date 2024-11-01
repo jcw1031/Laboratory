@@ -22,14 +22,23 @@ public class RedisPubSubTest {
         messageListenerContainer.addMessageListener((message, pattern) -> {
             log.info("A channel");
             log.info("message: {}", message);
-        }, new ChannelTopic("A"));
+            log.info("pattern: {}", pattern);
+        }, new ChannelTopic("ABC"));
+
         messageListenerContainer.addMessageListener((message, pattern) -> {
             log.info("B channel");
             log.info("message: {}", message);
-        }, new ChannelTopic("B"));
+            log.info("pattern: {}", pattern);
+        }, new ChannelTopic("BBC"));
 
-        redisPublisher.publish("A", "지찬우!");
-        redisPublisher.publish("B", "ㅎㅇ");
-        redisPublisher.publish("A", "안녕!");
+        messageListenerContainer.addMessageListener((message, pattern) -> {
+            log.info("B-sub channel");
+            log.info("message: {}", message);
+            log.info("pattern: {}", pattern);
+        }, new ChannelTopic("BBC"));
+
+        redisPublisher.publish("ABC", "지찬우!");
+        redisPublisher.publish("BBC", "ㅎㅇ");
+        redisPublisher.publish("BBC", "안녕!");
     }
 }

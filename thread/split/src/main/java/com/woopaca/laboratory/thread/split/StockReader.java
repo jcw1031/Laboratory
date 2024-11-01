@@ -5,12 +5,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 
 import java.io.IOException;
-import java.net.URI;
 
 @Slf4j
 @Component
@@ -31,7 +29,7 @@ public class StockReader {
         String payload = """
                 {
                     "header": {
-                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "approval_key": "925532c7-8fe1-4b4c-b0c6-3288e7956341",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
@@ -48,7 +46,7 @@ public class StockReader {
         payload = """
                 {
                     "header": {
-                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "approval_key": "925532c7-8fe1-4b4c-b0c6-3288e7956341",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
@@ -65,7 +63,7 @@ public class StockReader {
         payload = """
                 {
                     "header": {
-                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "approval_key": "925532c7-8fe1-4b4c-b0c6-3288e7956341",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
@@ -82,7 +80,7 @@ public class StockReader {
         payload = """
                 {
                     "header": {
-                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "approval_key": "925532c7-8fe1-4b4c-b0c6-3288e7956341",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
@@ -99,7 +97,7 @@ public class StockReader {
         payload = """
                 {
                     "header": {
-                        "approval_key": "16bd4458-0d3b-4a11-ac4b-2f5d5f678e32",
+                        "approval_key": "925532c7-8fe1-4b4c-b0c6-3288e7956341",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"

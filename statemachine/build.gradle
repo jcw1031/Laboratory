@@ -1,0 +1,6 @@
+dependencies {
+    implementation platform('org.springframework.statemachine:spring-statemachine-bom:4.0.0')
+    implementation 'org.springframework.statemachine:spring-statemachine-starter'
+    implementation 'org.springframework.statemachine:spring-statemachine-data-redis'
+    testImplementation 'org.springframework.statemachine:spring-statemachine-test'
+}
