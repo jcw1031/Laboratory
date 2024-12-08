@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+// Best practice
 @Slf4j
 public class NioMultiplexingSocketApplication {
 
