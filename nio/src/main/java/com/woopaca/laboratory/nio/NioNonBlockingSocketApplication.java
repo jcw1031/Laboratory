@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Bad Practice of NIO: non-blocking polling
+// 불필요한 CPU 리소스 사용
 public class NioNonBlockingSocketApplication {
 
     public static void main(String[] args) {
