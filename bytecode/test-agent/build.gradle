@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation 'net.bytebuddy:byte-buddy:1.14.12'
+}
+
+bootJar.enabled = false
+jar.enabled = false
+
+shadowJar {
+    archiveFileName.set("${project.name}.jar")
+
+    manifest {
+        attributes(
+                'Premain-Class': 'com.woopaca.laboratory.bytecode.agent.TestAgent',
+                'Agent-Class': 'com.woopaca.laboratory.bytecode.agent.TestAgent',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true'
+        )
+    }
+}
+
+tasks.build {
+    dependsOn tasks.shadowJar
+}
