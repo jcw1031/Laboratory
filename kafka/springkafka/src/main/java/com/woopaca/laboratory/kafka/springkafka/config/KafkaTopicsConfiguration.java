@@ -30,10 +30,8 @@ public class KafkaTopicsConfiguration {
 
     @Bean
     public NewTopic topic1() {
-        URL.of(URI.create("http://www.holybible.or.kr/cgi/biblesrch.php?VR=99&QR=%C3%A2%BC%BC%B1%E2+5%C0%E5&OD="))
         HttpClient client = HttpClient.newBuilder()
                 .build();
-        client.
 
         return new NewTopic("woopaca", 1, (short) 1);
     }
