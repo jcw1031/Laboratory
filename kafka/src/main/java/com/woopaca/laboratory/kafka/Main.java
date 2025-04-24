@@ -31,7 +31,9 @@ public class Main {
         producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
         try (final Producer<Object, Object> producer = new KafkaProducer<>(producerProperties)) {
-            producer.send(new ProducerRecord<>("my-first-topic", "key", "지찬우"));
+            producer.send(new ProducerRecord<>("my-first-topic", "1", "지찬우"));
+            producer.send(new ProducerRecord<>("my-first-topic", "2", "천재"));
+            producer.send(new ProducerRecord<>("my-first-topic", "3", "개발자"));
         }
 
         Properties properties = new Properties();
@@ -69,7 +71,6 @@ public class Main {
 
         @Override
         public void configure(Map<String, ?> configs) {
-
         }
     }
 }

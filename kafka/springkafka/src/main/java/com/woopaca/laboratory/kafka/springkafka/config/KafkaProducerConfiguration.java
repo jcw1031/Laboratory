@@ -1,5 +1,6 @@
 package com.woopaca.laboratory.kafka.springkafka.config;
 
+import com.woopaca.laboratory.kafka.springkafka.CustomPartitioner;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

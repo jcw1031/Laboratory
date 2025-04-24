@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaMessageListener {
 
-    @KafkaListener(id = "id1", topics = "woopaca")
+    @KafkaListener(id = "spring-kafka-test1", topics = "my-first-topic", groupId = "laboratory")
     public void listen(String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
         log.info("Received message in group 'laboratory': [{}]", message);
         log.info("Received message in partition: [{}]", partition);
