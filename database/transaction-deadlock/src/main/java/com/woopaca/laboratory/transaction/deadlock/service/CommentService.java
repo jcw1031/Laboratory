@@ -55,6 +55,7 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("post not found for post id [%d]", postId)));
         post.increaseCommentsCount();
+        entityManager.flush();
 
         Comment comment = new Comment(commentContent, post);
         commentRepository.save(comment);
