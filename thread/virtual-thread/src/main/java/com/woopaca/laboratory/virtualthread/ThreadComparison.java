@@ -2,12 +2,16 @@ package com.woopaca.laboratory.virtualthread;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadComparison {
 
-    private static final int TASK_COUNT = 10000;
+    private static final int TASK_COUNT = 10_000;
     private static final int SLEEP_MILLIS = 100;
 
     public static void main(String[] args) throws Exception {
