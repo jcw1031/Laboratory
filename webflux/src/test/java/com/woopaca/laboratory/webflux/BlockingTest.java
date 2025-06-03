@@ -14,29 +14,39 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 @Slf4j
 class BlockingTest {
 
     private final RestClient restClient;
-    private final ExecutorService callExecutor;
+    private final ExecutorService httpExecutor;
+    private final Random random;
 
     public BlockingTest() {
         this.restClient = RestClient.create();
+        ThreadFactory threadFactory = Thread.ofPlatform()
+                .name("http-", 1)
+                .factory();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         log.info("availableProcessors: {}", availableProcessors);
-        this.callExecutor = Executors.newFixedThreadPool(availableProcessors * 2);
+        this.httpExecutor = Executors.newFixedThreadPool(availableProcessors * 2, threadFactory);
+        this.random = new Random();
     }
 
-    @ValueSource(ints = 10)
+    @ValueSource(ints = 100)
     @ParameterizedTest
     void test(int count) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(count);
-        try (ExecutorService executorService = Executors.newFixedThreadPool(count)) {
+        ThreadFactory threadFactory = Thread.ofPlatform()
+                .name("caller-", 1)
+                .factory();
+        ExecutorService executorService = Executors.newFixedThreadPool(10, threadFactory);
+        try (executorService) {
             for (int i = 0; i < count; i++) {
                 executorService.execute(() -> {
                     try {
-                        Thread.sleep(2_000L);
+                        Thread.sleep(random.nextInt(300, 500));
                         call();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -51,10 +61,7 @@ class BlockingTest {
 
     private void call() {
         log.info("call()");
-
-        Random random = new Random();
-        List<CompletableFuture> futures = new ArrayList<>();
-
+        List<CompletableFuture<String>> futures = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             URI uri = UriComponentsBuilder.fromUriString("https://run.mocky.io/v3/a2c0b5e0-096e-470d-9921-6d28d7f52d71")
                     .queryParam("mocky-delay", random.nextInt(50, 300) + "ms")
@@ -69,7 +76,7 @@ class BlockingTest {
                         .body(String.class);
                 log.info("{}", finalI + 1);
                 return response;
-            }, callExecutor);
+            }, httpExecutor);
 
             futures.add(future);
         }
@@ -78,12 +85,14 @@ class BlockingTest {
                 .thenRun(() -> {
                     log.info("모든 요청 성공");
                     try {
+                        Thread.sleep(100L);
                         for (CompletableFuture<String> future : futures) {
                             log.info("Response: {}", future.get());
                         }
                     } catch (Exception e) {
                         log.error("Error occurred: {}", e.getMessage());
                     }
-                }).join();
+                })
+                .join();
     }
 }

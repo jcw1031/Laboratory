@@ -3,28 +3,34 @@ package com.woopaca.laboratory.webflux;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 @Slf4j
-class NonBlockingTest {
+public class BlockingVirtualThreadTest {
 
-    private final WebClient webClient;
+    private final RestClient restClient;
+    private final ExecutorService httpExecutor;
     private final Random random;
 
-    public NonBlockingTest() {
-        this.webClient = WebClient.create();
+    public BlockingVirtualThreadTest() {
+        this.restClient = RestClient.create();
+        ThreadFactory threadFactory = Thread.ofVirtual()
+                .name("http-", 1)
+                .factory();
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        log.info("availableProcessors: {}", availableProcessors);
+        this.httpExecutor = Executors.newFixedThreadPool(2, threadFactory);
         this.random = new Random();
     }
 
@@ -40,7 +46,7 @@ class NonBlockingTest {
             for (int i = 0; i < count; i++) {
                 executorService.execute(() -> {
                     try {
-                        Thread.sleep(random.nextInt(300, 500));
+                        Thread.sleep(random.nextInt(400, 450));
                         call();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -55,35 +61,37 @@ class NonBlockingTest {
 
     private void call() {
         log.info("call()");
-        List<Mono<String>> monos = new ArrayList<>();
+        List<CompletableFuture<String>> futures = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             URI uri = UriComponentsBuilder.fromUriString("https://run.mocky.io/v3/a2c0b5e0-096e-470d-9921-6d28d7f52d71")
-                    .queryParam("mocky-delay", random.nextInt(50, 300) + "ms")
+                    .queryParam("mocky-delay", random.nextInt(50, 100) + "ms")
                     .build()
                     .toUri();
 
             int finalI = i;
-            Mono<String> mono = webClient.get()
-                    .uri(uri)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .doOnSuccess(response -> {
-                        log.info("{}", finalI + 1);
-                    });
+            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+                String response = restClient.get()
+                        .uri(uri)
+                        .retrieve()
+                        .body(String.class);
+                log.info("{}", finalI + 1);
+                return response;
+            }, httpExecutor);
 
-            monos.add(mono);
+            futures.add(future);
         }
 
-        Mono.zip(monos.get(0), monos.get(1), monos.get(2), monos.get(3), monos.get(4), monos.get(5), monos.get(6), monos.get(7))
-                .doOnSuccess(zipped -> log.info("모든 요청 성공"))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(result -> {
-                    result.forEach(response -> {
-                        log.info("Response: {}", response);
-                    });
-                    return Mono.empty();
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .thenRun(() -> {
+                    log.info("모든 요청 성공");
+                    try {
+                        for (CompletableFuture<String> future : futures) {
+                            log.info("Response: {}", future.get());
+                        }
+                    } catch (Exception e) {
+                        log.error("Error occurred: {}", e.getMessage());
+                    }
                 })
-                .doOnError(error -> log.error("Error occurred: {}", error.getMessage()))
-                .block();
+                .join();
     }
 }
