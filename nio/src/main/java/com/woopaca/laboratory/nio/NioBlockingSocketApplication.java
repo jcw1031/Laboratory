@@ -46,6 +46,11 @@ public class NioBlockingSocketApplication {
     }
 
     private static int toUpperCase(int data) {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return Character.isLetter(data) ? Character.toUpperCase(data) : data;
     }
 }

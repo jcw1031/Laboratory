@@ -7,7 +7,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -15,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class BlockingVirtualThreadTest {
@@ -30,7 +30,7 @@ public class BlockingVirtualThreadTest {
                 .factory();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         log.info("availableProcessors: {}", availableProcessors);
-        this.httpExecutor = Executors.newFixedThreadPool(2, threadFactory);
+        this.httpExecutor = Executors.newFixedThreadPool(10, threadFactory);
         this.random = new Random();
     }
 
@@ -61,25 +61,13 @@ public class BlockingVirtualThreadTest {
 
     private void call() {
         log.info("call()");
-        List<CompletableFuture<String>> futures = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            URI uri = UriComponentsBuilder.fromUriString("https://run.mocky.io/v3/a2c0b5e0-096e-470d-9921-6d28d7f52d71")
-                    .queryParam("mocky-delay", random.nextInt(50, 100) + "ms")
-                    .build()
-                    .toUri();
-
-            int finalI = i;
-            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                String response = restClient.get()
-                        .uri(uri)
-                        .retrieve()
-                        .body(String.class);
-                log.info("{}", finalI + 1);
-                return response;
-            }, httpExecutor);
-
-            futures.add(future);
-        }
+        URI uri = UriComponentsBuilder.fromUriString("https://run.mocky.io/v3/a2c0b5e0-096e-470d-9921-6d28d7f52d71")
+                .queryParam("mocky-delay", random.nextInt(50, 80) + "ms")
+                .build()
+                .toUri();
+        List<CompletableFuture<String>> futures = IntStream.rangeClosed(1, 8)
+                .mapToObj(value -> requestAsync(value, uri))
+                .toList();
 
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .thenRun(() -> {
@@ -93,5 +81,16 @@ public class BlockingVirtualThreadTest {
                     }
                 })
                 .join();
+    }
+
+    private CompletableFuture<String> requestAsync(int value, URI uri) {
+        return CompletableFuture.supplyAsync(() -> {
+            String response = restClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .body(String.class);
+            log.info("{}", value);
+            return response;
+        }, httpExecutor);
     }
 }

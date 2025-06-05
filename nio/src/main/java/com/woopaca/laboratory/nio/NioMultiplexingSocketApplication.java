@@ -70,7 +70,7 @@ public class NioMultiplexingSocketApplication {
         }
 
         socketChannel.configureBlocking(false);
-        socketChannel.register(selectionKey.selector(), SelectionKey.OP_READ);
+        socketChannel.register(selectionKey.selector(), SelectionKey.OP_READ, selectionKey.attachment());
         socketChannels.put(socketChannel, ByteBuffer.allocateDirect(8));
     }
 
