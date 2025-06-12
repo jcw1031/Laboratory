@@ -25,12 +25,9 @@ public class BlockingVirtualThreadTest {
 
     public BlockingVirtualThreadTest() {
         this.restClient = RestClient.create();
-        ThreadFactory threadFactory = Thread.ofVirtual()
-                .name("http-", 1)
-                .factory();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         log.info("availableProcessors: {}", availableProcessors);
-        this.httpExecutor = Executors.newFixedThreadPool(10, threadFactory);
+        this.httpExecutor = Executors.newVirtualThreadPerTaskExecutor();
         this.random = new Random();
     }
 
@@ -44,12 +41,10 @@ public class BlockingVirtualThreadTest {
         ExecutorService executorService = Executors.newFixedThreadPool(10, threadFactory);
         try (executorService) {
             for (int i = 0; i < count; i++) {
+                int finalI = i;
                 executorService.execute(() -> {
                     try {
-                        Thread.sleep(random.nextInt(400, 450));
-                        call();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        call((char) ('A' + finalI));
                     } finally {
                         countDownLatch.countDown();
                     }
@@ -59,14 +54,10 @@ public class BlockingVirtualThreadTest {
         countDownLatch.await();
     }
 
-    private void call() {
+    private void call(char prefix) {
         log.info("call()");
-        URI uri = UriComponentsBuilder.fromUriString("https://run.mocky.io/v3/a2c0b5e0-096e-470d-9921-6d28d7f52d71")
-                .queryParam("mocky-delay", random.nextInt(50, 80) + "ms")
-                .build()
-                .toUri();
-        List<CompletableFuture<String>> futures = IntStream.rangeClosed(1, 8)
-                .mapToObj(value -> requestAsync(value, uri))
+        List<CompletableFuture<String>> futures = IntStream.rangeClosed(1, 20)
+                .mapToObj(value -> requestAsync(prefix, value))
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
@@ -83,13 +74,17 @@ public class BlockingVirtualThreadTest {
                 .join();
     }
 
-    private CompletableFuture<String> requestAsync(int value, URI uri) {
+    private CompletableFuture<String> requestAsync(char prefix, int value) {
+        URI uri = UriComponentsBuilder.fromUriString("http://43.203.219.110:8080")
+                .queryParam("delay", random.nextInt(50, 80))
+                .build()
+                .toUri();
         return CompletableFuture.supplyAsync(() -> {
             String response = restClient.get()
                     .uri(uri)
                     .retrieve()
                     .body(String.class);
-            log.info("{}", value);
+            log.info("{}-{}", prefix, value);
             return response;
         }, httpExecutor);
     }

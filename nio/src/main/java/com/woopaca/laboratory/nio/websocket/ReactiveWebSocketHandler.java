@@ -17,7 +17,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         Mono<WebSocketMessage> initialMessage = Mono.just(session.textMessage("""
                 {
                     "header": {
-                        "approval_key": "4d352c98-9c24-4b64-a79a-df54e223fb3d",
+                        "approval_key": "4d3c5886-f024-4249-a8ae-4168d8dad9a2",
                         "custtype": "P",
                         "tr_type": "1",
                         "content-type": "utf-8"
