@@ -83,7 +83,6 @@ class NonBlockingTest {
                         log.info("Response: {}", response);
                     });
                     return Mono.fromCallable(() -> {
-                        Thread.sleep(2_000L);
                         return "blocking";
                     });
                 })

@@ -36,16 +36,17 @@ public class NioMultiplexingSocketApplication {
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     try {
-                        if (selectionKey.isValid()) {
-                            if (selectionKey.isAcceptable()) {
-                                handleAcceptEvent(selectionKey);
-                            }
-                            if (selectionKey.isReadable()) {
-                                handleReadEvent(selectionKey);
-                            }
-                            if (selectionKey.isWritable()) {
-                                handleWriteEvent(selectionKey);
-                            }
+                        if (!selectionKey.isValid()) {
+                            continue;
+                        }
+                        if (selectionKey.isAcceptable()) {
+                            handleAcceptEvent(selectionKey);
+                        }
+                        if (selectionKey.isReadable()) {
+                            handleReadEvent(selectionKey);
+                        }
+                        if (selectionKey.isWritable()) {
+                            handleWriteEvent(selectionKey);
                         }
                     } catch (ClosedChannelException e) {
                         closeSocket((SocketChannel) selectionKey.channel());

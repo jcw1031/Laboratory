@@ -1,0 +1,16 @@
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-server'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:1.0.0"
+    }
+}
