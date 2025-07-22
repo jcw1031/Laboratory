@@ -1,0 +1,7 @@
+spring:
+  r2dbc:
+    url: r2dbc:mysql://***:***@localhost:3306/reactive
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG

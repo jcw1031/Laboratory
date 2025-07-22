@@ -4,13 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -24,7 +28,14 @@ public class MonoZipTest {
     private final Random random;
 
     public MonoZipTest() {
-        this.webClient = WebClient.create();
+        ConnectionProvider connectionProvider = ConnectionProvider.builder("woopaca")
+                .pendingAcquireMaxCount(4_096)
+                .build();
+        HttpClient httpClient = HttpClient.create(connectionProvider)
+                .responseTimeout(Duration.ofSeconds(30));
+        this.webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
         this.restClient = RestClient.create();
         this.random = new Random();
     }
@@ -80,7 +91,7 @@ public class MonoZipTest {
     }
 
     @ParameterizedTest(name = "{0}개 동시 요청")
-    @ValueSource(ints = 1_320)
+    @ValueSource(ints = 4_096)
     public void simultaneousRequests(int count) {
         List<Mono<String>> monos = createMonos("simultaneous", 1, count);
         Mono.zip(monos, Arrays::asList)
@@ -96,7 +107,7 @@ public class MonoZipTest {
     private List<Mono<String>> createMonos(String prefix, int start, int end) {
         return IntStream.rangeClosed(start, end)
                 .mapToObj(value -> {
-                    int delay = random.nextInt(100, 800);
+                    int delay = random.nextInt(100, 200);
                     URI uri = UriComponentsBuilder.fromUriString("http://43.203.219.110:8080")
                             .queryParam("delay", delay)
                             .build()

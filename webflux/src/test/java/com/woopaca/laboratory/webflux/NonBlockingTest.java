@@ -28,7 +28,7 @@ class NonBlockingTest {
 
     public NonBlockingTest() {
         HttpClient httpClient = HttpClient.create()
-                .runOn(new NioEventLoopGroup(1));
+                .runOn(new NioEventLoopGroup(4));
         this.webClient = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
