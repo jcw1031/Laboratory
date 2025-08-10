@@ -31,7 +31,7 @@ public class BlockingVirtualThreadTest {
         this.random = new Random();
     }
 
-    @ValueSource(ints = 100)
+    @ValueSource(ints = 10)
     @ParameterizedTest
     void test(int count) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(count);
@@ -75,7 +75,7 @@ public class BlockingVirtualThreadTest {
     }
 
     private CompletableFuture<String> requestAsync(char prefix, int value) {
-        URI uri = UriComponentsBuilder.fromUriString("http://43.203.219.110:8080")
+        URI uri = UriComponentsBuilder.fromUriString("http://localhost:4221")
                 .queryParam("delay", random.nextInt(50, 80))
                 .build()
                 .toUri();

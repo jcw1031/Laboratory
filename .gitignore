@@ -44,3 +44,5 @@ security/src/main/resources/application.yml
 database/spatial/src/main/generated
 
 .DS_Store
+
+.serena/

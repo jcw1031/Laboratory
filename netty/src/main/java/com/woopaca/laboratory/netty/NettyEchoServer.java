@@ -7,7 +7,7 @@ import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
 
 @Slf4j
-public class NettyTest {
+public class NettyEchoServer {
 
     public static void main(String[] args) {
         DisposableServer disposableServer = TcpServer.create()

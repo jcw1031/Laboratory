@@ -1,0 +1,10 @@
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    if (System.getProperty('os.name').toLowerCase().contains('mac')) {
+        implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-x86_64'
+    }
+
+    testImplementation 'io.projectreactor:reactor-test'
+}
