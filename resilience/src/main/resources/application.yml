@@ -1,0 +1,84 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 100
+        permitted-number-of-calls-in-half-open-state: 10
+        wait-duration-in-open-state: 10s
+        failure-rate-threshold: 60
+        event-consumer-buffer-size: 10
+        register-health-indicator: true
+      shared:
+        sliding-window-size: 50
+        permitted-number-of-calls-in-half-open-state: 10
+
+    instances:
+      a:
+        register-health-indicator: true
+        sliding-window-size: 100
+      b:
+        register-health-indicator: true
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-type: TIME_BASED
+        minimum-number-of-calls: 20
+        wait-duration-in-open-state: 50s
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 10
+
+  retry:
+    instances:
+      a:
+        max-attempts: 3
+        wait-duration: 10s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.io.IOException
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException
+      b:
+        max-attempts: 3
+        wait-duration: 10s
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.io.IOException
+
+  bulkhead:
+    instances:
+      a:
+        max-concurrent-calls: 10
+      b:
+        max-wait-duration: 10s
+        max-concurrent-calls: 20
+
+  thread-pool-bulkhead:
+    instances:
+      c:
+        max-thread-pool-size: 1
+        core-thread-pool-size: 1
+        queue-capacity: 1
+        writable-stack-trace-enabled: true
+
+  ratelimiter:
+    instances:
+      a:
+        limit-for-period: 10
+        limit-refresh-period: 1s
+        timeout-duration: 0s
+        register-health-indicator: true
+        event-consumer-buffer-size: 100
+      b:
+        limit-for-period: 6
+        limit-refresh-period: 500ms
+        timeout-duration: 3s
+
+  timelimiter:
+    instances:
+      a:
+        timeout-duration: 2s
+        cancel-running-future: true
+      b:
+        timeout-duration: 1s
+        cancel-running-future: false
