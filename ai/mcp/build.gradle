@@ -4,13 +4,16 @@ java {
     }
 }
 
+ext {
+    set('springAiVersion', "1.0.1")
+}
+
 dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-mcp-server'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.ai:spring-ai-bom:1.0.0"
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
     }
 }
