@@ -75,8 +75,8 @@ public class BlockingVirtualThreadTest {
     }
 
     private CompletableFuture<String> requestAsync(char prefix, int value) {
-        URI uri = UriComponentsBuilder.fromUriString("http://localhost:4221")
-                .queryParam("delay", random.nextInt(50, 80))
+        URI uri = UriComponentsBuilder.fromUriString("http://43.203.219.110:8080")
+                .queryParam("delay", random.nextInt(50, 51))
                 .build()
                 .toUri();
         return CompletableFuture.supplyAsync(() -> {

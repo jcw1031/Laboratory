@@ -63,7 +63,7 @@ class NonBlockingTest {
         List<Mono<String>> monos = IntStream.rangeClosed(1, 20)
                 .mapToObj(value -> {
                     URI uri = UriComponentsBuilder.fromUriString("http://43.203.219.110:8080")
-                            .queryParam("delay", random.nextInt(50, 80))
+                            .queryParam("delay", random.nextInt(50, 51))
                             .build()
                             .toUri();
                     return webClient.get()

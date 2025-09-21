@@ -23,4 +23,10 @@ public class TestController {
         Thread.sleep(2_000);
         return "Hello, World!";
     }
+
+    @GetMapping("/exception")
+    public String exception() {
+        log.info("TestController.exception");
+        throw new RuntimeException("This is a test exception");
+    }
 }

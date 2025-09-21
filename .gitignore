@@ -46,3 +46,5 @@ database/spatial/src/main/generated
 .DS_Store
 
 .serena/
+
+ai/src/main/resources/gemini/vertex
