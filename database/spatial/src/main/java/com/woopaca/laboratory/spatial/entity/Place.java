@@ -22,13 +22,17 @@ public class Place {
     @Column(columnDefinition = "POINT SRID 4326")
     private Point coordinates;
 
+    @Column(columnDefinition = "POINT SRID 4326")
+    private Point coordinatesWithIndex;
+
     public Place() {
     }
 
     @Builder
-    public Place(String name, Point coordinates) {
+    public Place(String name, Point coordinates, Point coordinatesWithIndex) {
         this.name = name;
         this.coordinates = coordinates;
+        this.coordinatesWithIndex = coordinatesWithIndex;
     }
 
 }

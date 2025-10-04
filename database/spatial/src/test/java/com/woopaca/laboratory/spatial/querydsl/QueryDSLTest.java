@@ -41,9 +41,9 @@ public class QueryDSLTest {
         Point pointA = geometryFactory.createPoint(new Coordinate(127.2845, 37.5318));
         Point pointB = geometryFactory.createPoint(new Coordinate(127.4236, 37.6294));
         Point pointC = geometryFactory.createPoint(new Coordinate(127.3916, 37.5823));
-        placeRepository.save(new Place("Place A", pointA));
-        placeRepository.save(new Place("Place B", pointB));
-        placeRepository.save(new Place("Place C", pointC));
+        placeRepository.save(new Place("Place A", pointA, pointA));
+        placeRepository.save(new Place("Place B", pointB, pointB));
+        placeRepository.save(new Place("Place C", pointC,  pointC));
     }
 
     @Test
