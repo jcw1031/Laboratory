@@ -4,23 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.DataClassRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class JobCompletionNotificationListener implements JobExecutionListener {
 
-    @Value("sample-data.csv")
-    private Resource csvFile;
+    private final JdbcClient jdbcClient;
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JobCompletionNotificationListener(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
     }
 
     @Override
@@ -28,7 +22,9 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             log.info("!!! JOB COMPLETED! Time to verify the results");
 
-            jdbcTemplate.query("SELECT first_name, last_name FROM people", new DataClassRowMapper<>(Person.class))
+            jdbcClient.sql("SELECT first_name, last_name FROM people")
+                    .query(Person.class)
+                    .stream()
                     .forEach(person -> log.info("FOUND <{{}}> in the database", person));
         }
     }
