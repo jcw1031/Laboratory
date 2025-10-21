@@ -1,8 +1,11 @@
 package com.woopaca.laboratory.batch;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -15,6 +18,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,11 +31,13 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Configuration
 public class PartitionBatchConfiguration {
 
+    private final AtomicInteger atomicInteger = new AtomicInteger(0);
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final DataSource dataSource;
@@ -47,6 +53,12 @@ public class PartitionBatchConfiguration {
         return new JobBuilder("partitionJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(partitionStep1)
+                .next(new StepBuilder("atomicInteger", jobRepository)
+                        .tasklet((contribution, chunkContext) -> {
+                            log.info("atomicInteger: {}", atomicInteger.get());
+                            return RepeatStatus.FINISHED;
+                        }, transactionManager)
+                        .build())
                 .build();
     }
 
@@ -55,7 +67,7 @@ public class PartitionBatchConfiguration {
         return new StepBuilder("partitionStep1", jobRepository)
                 .partitioner("slaveStep", dateRangePartitioner)
                 .step(slaveStep)
-                .gridSize(10)
+                .gridSize(5)
                 .taskExecutor(partitionTaskExecutor)
                 .build();
     }
@@ -63,10 +75,10 @@ public class PartitionBatchConfiguration {
     @Bean
     public Step slaveStep(@Qualifier("partitionReader") ItemReader<String> partitionReader, ItemProcessor<String, String> partitionProcessor) {
         return new StepBuilder("slaveStep", jobRepository)
-                .<String, String>chunk(100, transactionManager)
+                .<String, String>chunk(1000, transactionManager)
                 .reader(partitionReader)
                 .processor(partitionProcessor)
-                .writer(chunk -> log.info("chunk: {}", chunk))
+                .writer(chunk -> atomicInteger.incrementAndGet())
                 .build();
     }
 
@@ -92,7 +104,7 @@ public class PartitionBatchConfiguration {
                     String totalSalary = rs.getString("total_salary");
                     return String.join("-", empNo, totalSalary);
                 })
-                .pageSize(100)
+                .pageSize(1000)
                 .build();
     }
 
@@ -107,8 +119,8 @@ public class PartitionBatchConfiguration {
         return gridSize -> {
             log.info("gridSize: {}", gridSize);
 
-            LocalDate startDate = LocalDate.of(1981, 1, 1);
-            LocalDate endDate = LocalDate.of(2002, 1, 1);
+            LocalDate startDate = LocalDate.of(1986, 1, 1);
+            LocalDate endDate = LocalDate.of(1987, 1, 1);
 
             Map<String, ExecutionContext> partitions = new HashMap<>();
             LocalDate currentStart = startDate;
@@ -132,14 +144,32 @@ public class PartitionBatchConfiguration {
                 partitionNumber++;
             }
 
+            log.info("Total partitions created: {}", partitions.size());
             return partitions;
+        };
+    }
+
+    @Bean
+    public StepExecutionListener partitionStepListener() {
+        return new StepExecutionListener() {
+
+            @Override
+            public void beforeStep(StepExecution stepExecution) {
+                log.info("▶️ Starting Step: {}", stepExecution.getStepName());
+            }
+
+            @Override
+            public ExitStatus afterStep(StepExecution stepExecution) {
+                log.info("✅ Finished Step: {}", stepExecution.getStepName());
+                return ExitStatus.COMPLETED;
+            }
         };
     }
 
     @Bean
     public TaskExecutor partitionTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("partition-");
