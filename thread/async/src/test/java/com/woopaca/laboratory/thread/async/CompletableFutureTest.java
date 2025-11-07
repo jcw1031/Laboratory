@@ -2,8 +2,11 @@ package com.woopaca.laboratory.thread.async;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -61,6 +64,63 @@ class CompletableFutureTest {
                     log.info("{} {}", resultD, resultE);
                 })
                 .join();
+    }
+
+    @Test
+    void thenApplyAsyncTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1_000);
+
+        ThreadPoolTaskExecutor mainTaskExecutor = new ThreadPoolTaskExecutorBuilder()
+                .corePoolSize(20)
+                .maxPoolSize(20)
+                .queueCapacity(1_000)
+                .threadNamePrefix("main-")
+                .build();
+        ThreadPoolTaskExecutor asyncTaskExecutor = new ThreadPoolTaskExecutorBuilder()
+                .corePoolSize(4)
+                .maxPoolSize(4)
+                .queueCapacity(10_000)
+                .threadNamePrefix("async-")
+                .build();
+        asyncTaskExecutor.initialize();
+        mainTaskExecutor.initialize();
+
+        CompletableFuture<Void> completableFuture1 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
+        CompletableFuture<Void> completableFuture2 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
+        CompletableFuture<Void> completableFuture3 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
+        CompletableFuture<Void> completableFuture4 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
+        CompletableFuture<Void> completableFuture5 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
+
+        CompletableFuture<Void> completableFuture6 = completableFuture1.thenAccept(unused -> {
+            log.info("6");
+            sleep(200);
+        });
+
+        CompletableFuture<Void> completableFuture7 = CompletableFuture.allOf(completableFuture1, completableFuture2, completableFuture3)
+                .thenAccept(unused -> {
+                    log.info("7");
+                    sleep(200);
+                });
+
+        CompletableFuture<Void> completableFuture8 = CompletableFuture.allOf(completableFuture4, completableFuture5)
+                .thenAccept(unused -> {
+                    log.info("8");
+                    sleep(200);
+                });
+
+        for (int i = 0; i < 1_000; i++) {
+            mainTaskExecutor.execute(() -> {
+                try {
+                    CompletableFuture.allOf(completableFuture6, completableFuture7, completableFuture8)
+                            .thenAccept(unused -> log.info("완료"))
+                            .join();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+
+        countDownLatch.await();
     }
 
     private void sleep(long millis) {
