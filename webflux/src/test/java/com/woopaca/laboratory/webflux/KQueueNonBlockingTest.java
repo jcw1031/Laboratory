@@ -1,6 +1,6 @@
 package com.woopaca.laboratory.webflux;
 
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,14 +21,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.IntStream;
 
 @Slf4j
-class NonBlockingTest {
+class KQueueNonBlockingTest {
 
     private final WebClient webClient;
     private final Random random;
 
-    public NonBlockingTest() {
+    public KQueueNonBlockingTest() {
         HttpClient httpClient = HttpClient.create()
-                .runOn(new NioEventLoopGroup(4));
+                .runOn(new KQueueEventLoopGroup(4));
         this.webClient = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();

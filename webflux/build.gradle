@@ -1,5 +1,6 @@
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'io.netty:netty-transport-native-kqueue:4.1.121.Final:osx-aarch_64'
     testImplementation 'io.projectreactor:reactor-test'
-    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.113.Final:osx-aarch_64'
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
 }

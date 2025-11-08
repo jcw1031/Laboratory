@@ -34,7 +34,7 @@ class BlockingTest {
         this.random = new Random();
     }
 
-    @ValueSource(ints = 10)
+    @ValueSource(ints = 100)
     @ParameterizedTest
     void test(int count) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(count);
