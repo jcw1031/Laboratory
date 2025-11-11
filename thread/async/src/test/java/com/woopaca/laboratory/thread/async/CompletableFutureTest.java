@@ -91,22 +91,22 @@ class CompletableFutureTest {
         CompletableFuture<Void> completableFuture4 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
         CompletableFuture<Void> completableFuture5 = CompletableFuture.runAsync(() -> sleep(200), asyncTaskExecutor);
 
-        CompletableFuture<Void> completableFuture6 = completableFuture1.thenAccept(unused -> {
+        CompletableFuture<Void> completableFuture6 = completableFuture1.thenAcceptAsync(unused -> {
             log.info("6");
-            sleep(200);
-        });
+            sleep(500);
+        }, asyncTaskExecutor);
 
         CompletableFuture<Void> completableFuture7 = CompletableFuture.allOf(completableFuture1, completableFuture2, completableFuture3)
-                .thenAccept(unused -> {
+                .thenAcceptAsync(unused -> {
                     log.info("7");
-                    sleep(200);
-                });
+                    sleep(500);
+                }, asyncTaskExecutor);
 
         CompletableFuture<Void> completableFuture8 = CompletableFuture.allOf(completableFuture4, completableFuture5)
-                .thenAccept(unused -> {
+                .thenAcceptAsync(unused -> {
                     log.info("8");
-                    sleep(200);
-                });
+                    sleep(500);
+                }, asyncTaskExecutor);
 
         for (int i = 0; i < 1_000; i++) {
             mainTaskExecutor.execute(() -> {
