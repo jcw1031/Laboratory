@@ -19,7 +19,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
-public class EventLoopThreadBlockingTest {
+class EventLoopThreadBlockingTest {
 
     private final WebClient webClient;
     private final TaskExecutor taskExecutor;

@@ -21,7 +21,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class MonoZipTest {
+class MonoZipTest {
 
     private final WebClient webClient;
     private final RestClient restClient;
