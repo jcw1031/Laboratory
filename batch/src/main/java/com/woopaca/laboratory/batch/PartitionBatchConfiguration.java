@@ -2,24 +2,24 @@ package com.woopaca.laboratory.batch;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.partition.support.Partitioner;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
+import org.springframework.batch.core.listener.StepExecutionListener;
+import org.springframework.batch.core.partition.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.Step;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.database.JdbcPagingItemReader;
-import org.springframework.batch.item.database.Order;
-import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
-import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Qualifier;t
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.batch.infrastructure.item.database.JdbcPagingItemReader;
+import org.springframework.batch.infrastructure.item.database.Order;
+import org.springframework.batch.infrastructure.item.database.builder.JdbcPagingItemReaderBuilder;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,7 +75,8 @@ public class PartitionBatchConfiguration {
     @Bean
     public Step slaveStep(@Qualifier("partitionReader") ItemReader<String> partitionReader, ItemProcessor<String, String> partitionProcessor) {
         return new StepBuilder("slaveStep", jobRepository)
-                .<String, String>chunk(1000, transactionManager)
+                .<String, String>chunk(1000)
+                .transactionManager(transactionManager)
                 .reader(partitionReader)
                 .processor(partitionProcessor)
                 .writer(chunk -> atomicInteger.incrementAndGet())
@@ -87,7 +88,7 @@ public class PartitionBatchConfiguration {
     public JdbcPagingItemReader<String> partitionReader(
             @Value("#{stepExecutionContext['startDate']}") LocalDate startDate,
             @Value("#{stepExecutionContext['endDate']}") LocalDate endDate
-    ) {
+    ) throws Exception {
         log.info("partitionReader: startDate={}, endDate={}", startDate, endDate);
 
         return new JdbcPagingItemReaderBuilder<String>()

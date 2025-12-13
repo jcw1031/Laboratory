@@ -1,7 +1,7 @@
 package com.woopaca.laboratory.batch;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 @Slf4j
 public class PersonItemProcessor implements ItemProcessor<Person, Person> {
