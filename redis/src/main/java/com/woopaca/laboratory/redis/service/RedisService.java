@@ -2,7 +2,6 @@ package com.woopaca.laboratory.redis.service;
 
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.hash.HashMapper;
@@ -19,9 +18,10 @@ public class RedisService {
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, byte[], byte[]> hashOperations;
+
     private final HashMapper<Object, byte[], byte[]> hashMapper = new ObjectHashMapper();
 
-    public RedisService(@Qualifier("redisTemplate") RedisTemplate<String, String> redisTemplate) {
+    public RedisService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
